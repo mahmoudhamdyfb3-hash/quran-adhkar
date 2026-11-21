@@ -26,7 +26,7 @@ jobs:
       - name: Prepare the Android wrapper
         run: |
           npm init -y
-          npm install @capacitor/core@7 @capacitor/cli@7 @capacitor/android@7
+          npm install @capacitor/core@7 @capacitor/cli@7 @capacitor/android@7 @capacitor/assets@3
           mkdir -p www
           rsync -a ./ www/ --exclude .git --exclude .github --exclude android --exclude www --exclude node_modules --exclude functions --exclude scripts --exclude '*.zip' --exclude '*.bat' --exclude firebase.json --exclude firestore.rules --exclude PUSH_SETUP.md
           cat > capacitor.config.json <<'EOF'
@@ -34,6 +34,7 @@ jobs:
           EOF
           npx cap add android
           npx cap sync android
+          npx capacitor-assets generate --android
       - name: Build installable APK
         if: ${{ inputs.output == 'apk' || inputs.output == 'both' }}
         run: cd android && ./gradlew assembleDebug
