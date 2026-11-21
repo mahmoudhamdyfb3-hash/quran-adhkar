@@ -29,10 +29,8 @@ jobs:
           npm install @capacitor/core@7 @capacitor/cli@7 @capacitor/android@7
           mkdir -p www
           rsync -a ./ www/ --exclude .git --exclude .github --exclude android --exclude www --exclude node_modules --exclude functions --exclude scripts --exclude '*.zip' --exclude '*.bat' --exclude firebase.json --exclude firestore.rules --exclude PUSH_SETUP.md
-          cat > capacitor.config.ts <<'EOF'
-          import type { CapacitorConfig } from '@capacitor/cli';
-          const config: CapacitorConfig = { appId: 'com.quranadhkar.app', appName: 'Quran Adhkar', webDir: 'www', bundledWebRuntime: false };
-          export default config;
+          cat > capacitor.config.json <<'EOF'
+          {"appId":"com.quranadhkar.app","appName":"Quran Adhkar","webDir":"www"}
           EOF
           npx cap add android
           npx cap sync android
@@ -56,3 +54,4 @@ jobs:
           name: Quran-Adhkar-AAB
           path: android/app/build/outputs/bundle/release/app-release.aab
           if-no-files-found: error
+
