@@ -30,7 +30,7 @@ jobs:
           mkdir -p www
           rsync -a ./ www/ --exclude .git --exclude .github --exclude android --exclude www --exclude node_modules --exclude functions --exclude scripts --exclude '*.zip' --exclude '*.bat' --exclude firebase.json --exclude firestore.rules --exclude PUSH_SETUP.md
           cat > capacitor.config.json <<'EOF'
-          {"appId":"com.quranadhkar.app","appName":"Quran Adhkar","webDir":"www"}
+          {"appId":"com.quranadhkar.app","appName":"قرآن وأذكار","webDir":"www"}
           EOF
           npx cap add android
           npx cap sync android
