@@ -1,0 +1,58 @@
+name: Build Android APK and AAB
+on:
+  workflow_dispatch:
+    inputs:
+      output:
+        description: 'Choose the Android files to build'
+        required: true
+        default: both
+        type: choice
+        options: [both, apk, aab]
+jobs:
+  build:
+    name: Build ${{ inputs.output }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Prepare the Android wrapper
+        run: |
+          npm init -y
+          npm install @capacitor/core@7 @capacitor/cli@7 @capacitor/android@7
+          mkdir -p www
+          rsync -a ./ www/ --exclude .git --exclude .github --exclude android --exclude www --exclude node_modules --exclude functions --exclude scripts --exclude '*.zip' --exclude '*.bat' --exclude firebase.json --exclude firestore.rules --exclude PUSH_SETUP.md
+          cat > capacitor.config.ts <<'EOF'
+          import type { CapacitorConfig } from '@capacitor/cli';
+          const config: CapacitorConfig = { appId: 'com.quranadhkar.app', appName: 'Quran Adhkar', webDir: 'www', bundledWebRuntime: false };
+          export default config;
+          EOF
+          npx cap add android
+          npx cap sync android
+      - name: Build installable APK
+        if: ${{ inputs.output == 'apk' || inputs.output == 'both' }}
+        run: cd android && ./gradlew assembleDebug
+      - name: Build AAB
+        if: ${{ inputs.output == 'aab' || inputs.output == 'both' }}
+        run: cd android && ./gradlew bundleRelease
+      - name: Upload APK
+        if: ${{ inputs.output == 'apk' || inputs.output == 'both' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: Quran-Adhkar-APK
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+      - name: Upload AAB
+        if: ${{ inputs.output == 'aab' || inputs.output == 'both' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: Quran-Adhkar-AAB
+          path: android/app/build/outputs/bundle/release/app-release.aab
+          if-no-files-found: error
