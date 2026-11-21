@@ -1,0 +1,10 @@
+{
+  "name": "قرآن وأذكار",
+  "short_name": "قرآن وأذكار",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#123d34",
+  "theme_color": "#123d34",
+  "lang": "ar",
+  "dir": "rtl"
+}

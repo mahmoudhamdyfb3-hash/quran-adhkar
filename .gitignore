@@ -1,0 +1,8 @@
+.DS_Store
+Thumbs.db
+node_modules/
+functions/node_modules/
+.firebaserc
+
+scripts/node_modules/
+service-account*.json

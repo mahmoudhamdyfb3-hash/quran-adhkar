@@ -1,0 +1,30 @@
+name: Daily Quran and Adhkar reminders
+on:
+  schedule:
+    # Both UTC alternatives keep Cairo reminders correct when daylight saving changes.
+    - cron: '0 4,5,15,16 * * *'
+    - cron: '30 17,18 * * *'
+  workflow_dispatch:
+    inputs:
+      reminder:
+        description: 'Optional test reminder'
+        required: false
+        type: choice
+        options:
+          - ''
+          - morning
+          - evening
+          - quran
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install --no-audit --no-fund --prefix scripts
+      - run: node scripts/send-reminders.mjs
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          FORCE_REMINDER: ${{ inputs.reminder }}
