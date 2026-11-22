@@ -1214,6 +1214,24 @@ body.dark-mode-page .bookmark-item small{color:#efc975!important}
     event.preventDefault();event.stopImmediatePropagation();
   },true);
 })();
+</script><script id="android-local-notifications">
+(() => {
+  const group=document.querySelector('.notifications-group');if(!group)return;
+  const toggle=group.querySelector('[data-notify-toggle]'),test=group.querySelector('[data-notify-test]');
+  const native=()=>window.Capacitor?.Plugins?.LocalNotifications;
+  const note=(title,body='')=>{let box=document.querySelector('.notification-toast');if(!box){box=document.createElement('div');box.className='notification-toast';document.body.appendChild(box)}box.innerHTML='<b>'+title+'</b>'+(body?'<br><span>'+body+'</span>':'');box.classList.add('show');clearTimeout(note.timer);note.timer=setTimeout(()=>box.classList.remove('show'),4200)};
+  const key='androidDailyNotifications';
+  const times={morning:group.querySelector('[data-notify-morning]'),evening:group.querySelector('[data-notify-evening]'),quran:group.querySelector('[data-notify-quran]')};
+  const messages={morning:['حان وقت أذكار الصباح','ابدأ يومك بذكر الله وطمأنينة القلب.'],evening:['حان وقت أذكار المساء','اختم يومك بذكر الله وحفظه.'],quran:['حان وقت ورد القرآن','اقرأ ما تيسر من كتاب الله.']};
+  const ids={morning:901,evening:902,quran:903};
+  const update=()=>toggle.textContent=localStorage.getItem(key)==='1'?'إيقاف':'تفعيل';
+  const permission=async plugin=>{let state=await plugin.checkPermissions();if(state.display!=='granted')state=await plugin.requestPermissions();if(state.display!=='granted')throw Error('يلزم السماح بالتنبيهات من إعدادات الهاتف.');try{await plugin.createChannel({id:'quran-adhkar-reminders',name:'تنبيهات قرآن وأذكار',description:'التذكيرات اليومية',importance:4,visibility:1})}catch{}};
+  const schedule=async()=>{const plugin=native();if(!plugin)throw Error('نسخة التطبيق القديمة لا تدعم إشعارات أندرويد. ابنِ نسخة جديدة أولًا.');await permission(plugin);await plugin.cancel({notifications:Object.values(ids).map(id=>({id}))});const notifications=Object.keys(times).map(name=>{const [hour,minute]=(times[name].value||({morning:'07:00',evening:'18:00',quran:'20:30'}[name])).split(':').map(Number);return {id:ids[name],title:messages[name][0],body:messages[name][1],channelId:'quran-adhkar-reminders',schedule:{on:{hour,minute},allowWhileIdle:true}}});await plugin.schedule({notifications});localStorage.setItem(key,'1');localStorage.setItem('adhkarNotificationsEnabled','0');update();note('تم تفعيل التنبيهات اليومية','سيصلك تذكير الصباح والمساء وورد القرآن.');};
+  toggle.onclick=async()=>{if(localStorage.getItem(key)==='1'){try{const plugin=native();if(plugin)await plugin.cancel({notifications:Object.values(ids).map(id=>({id}))})}catch{}localStorage.setItem(key,'0');update();note('تم إيقاف التنبيهات اليومية');return}try{await schedule()}catch(error){note('تعذر تفعيل التنبيهات',error.message||'جرّب النسخة الجديدة من التطبيق.')}};
+  test.onclick=async()=>{try{const plugin=native();if(!plugin)throw Error('ابنِ نسخة جديدة من التطبيق أولًا.');await permission(plugin);await plugin.schedule({notifications:[{id:990,title:'قرآن وأذكار',body:'هذا تنبيه تجريبي — إذا ظهر الآن فالتنبيهات تعمل.',channelId:'quran-adhkar-reminders',schedule:{at:new Date(Date.now()+3000),allowWhileIdle:true}}]});note('تم إرسال التنبيه التجريبي','سيظهر خلال ثوانٍ قليلة.')}catch(error){note('تعذر إرسال التنبيه',error.message||'تحقق من إذن التنبيهات.')}};
+  Object.values(times).forEach(input=>input.addEventListener('change',()=>{if(localStorage.getItem(key)==='1')schedule().catch(error=>note('لم يتم تحديث الموعد',error.message||''))}));
+  localStorage.setItem('adhkarNotificationsEnabled','0');update();
+})();
 </script></body></html>
 
 
