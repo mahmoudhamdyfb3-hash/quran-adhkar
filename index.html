@@ -1196,6 +1196,24 @@ body.dark-mode-page .bookmark-item small{color:#efc975!important}
     return {ok:true};
   };
 })();
+</script><style id="settings-and-tajweed-fixes">
+/* لا تبدو الإعدادات نشطة إلا عند فتح صفحة الإعدادات فعلًا. */
+.nav button[data-page="settings"]:not(.selected){color:#7a8276!important;font-weight:400!important}.nav button[data-page="settings"]:not(.selected) b{opacity:.72!important;filter:saturate(.45)!important}.nav button[data-page="settings"]:not(.selected) b::before{background-color:transparent!important;border-color:transparent!important;box-shadow:none!important}
+</style><script id="all-tajweed-marks-help">
+(() => {
+  const details={
+    maddNatural:['مد طبيعي','يمد حرف المد مقدار حركتين عند عدم وجود همز أو سكون بعده.'],maddNaturalMiniature:['مد طبيعي صغير','علامة مد صغيرة في الرسم العثماني، وحكمها المد الطبيعي.'],maddSukoon:['مد عارض للسكون','يظهر عند الوقف إذا جاء بعد حرف المد سكون عارض.'],maddSeparated:['مد منفصل','يأتي حرف المد في آخر كلمة والهمز في أول الكلمة التالية.'],maddConnected:['مد متصل','يأتي حرف المد والهمز في الكلمة نفسها.'],maddNecessary:['مد لازم','يأتي بعد حرف المد سكون أصلي أو شدة.'],generalGhunnah:['غنة','غنة ظاهرة في النون أو الميم المشددتين.'],idghamGhunnah:['إدغام بغنة','تدغم النون الساكنة أو التنوين مع غنة.'],idghamBilaGhunnah:['إدغام بلا غنة','يدغم التنوين أو النون الساكنة من غير غنة.'],ikhfaaLight:['إخفاء مرقق','يخفى صوت النون الساكنة أو التنوين مع غنة لطيفة.'],ikhfaaHeavy:['إخفاء مفخم','يخفى صوت النون الساكنة أو التنوين مع غنة مفخمة.'],iqlaab:['إقلاب','تقلب النون الساكنة أو التنوين إلى ميم مخفاة عند الباء.'],qalqalah:['قلقلة','اهتزاز خفيف للصوت في حروف قطب جد عند السكون أو الوقف.'],tafkhim:['تفخيم','ينطق الحرف بامتلاء في الفم.'],lamShamsiyah:['لام شمسية','اللام في «الـ» لا تنطق عند الوصل بحرف شمسي.'],hamzatWaslSilent:['همزة وصل','تنطق عند البدء وتسقط عند وصل القراءة بما قبلها.']
+  };
+  document.addEventListener('click',event=>{
+    const mark=event.target.closest?.('#reader .ayah tajweed');if(!mark)return;
+    const modal=document.querySelector('.tajweed-explanation');if(!modal)return;
+    const name=[...mark.classList].find(item=>details[item]);
+    const data=name?details[name]:['حكم تجويد','هذا موضع ملوّن في المصحف لبيان حكم التجويد أثناء التلاوة.'];
+    modal.querySelector('h2').textContent=data[0];modal.querySelector('.tajweed-rule-sample').textContent=mark.textContent;modal.querySelector('p').textContent=data[1];
+    const count=modal.querySelector('.tajweed-count');count.hidden=true;modal.classList.add('show');
+    event.preventDefault();event.stopImmediatePropagation();
+  },true);
+})();
 </script></body></html>
 
 
